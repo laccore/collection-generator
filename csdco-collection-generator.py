@@ -11,7 +11,7 @@ def export_csv(dataframe, export_filename):
   export_start_time = timeit.default_timer()
   print('Exporting collection to CSV...')
   csv_data = dataframe.loc[:,['Location','Country','State_Province','Hole ID','Original ID','Date','Water Depth (m)','Lat','Long','Elevation','Position','Sample Type','mblf T','mblf B']]
-  csv_data.Date = csv_data.Date.apply(lambda x: x.strftime('%Y%m%d') if isinstance(x, pd.datetime) else x)
+  csv_data.Date = csv_data.Date.apply(lambda x: x.strftime('%Y%m%d') if isinstance(x, pd.datetime) and pd.notnull(x) else x)
 
   csv_data.to_csv(export_filename, encoding='utf-8', index=False)
 
