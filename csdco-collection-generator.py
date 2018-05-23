@@ -13,7 +13,7 @@ def export_csv(dataframe):
   csv_data = dataframe.loc[:,['Location','Country','State_Province','Hole ID','Original ID','Date','Water Depth (m)','Lat','Long','Elevation','Position','Sample Type','mblf T','mblf B']]
   csv_data.Date = csv_data.Date.apply(lambda x: x.strftime('%Y%m%d') if isinstance(x, pd.datetime) else x)
 
-  filename = 'collection_' + datetime.datetime.now().strftime('%Y%m%d') + '.csv'
+  filename = 'collection_' + datetime.datetime.now().strftime('%Y%m%d') + '.csv' if args.d else 'collection.csv'
   csv_data.to_csv(filename, encoding='utf-8', index=False)
 
   print('Collection exported to {} in {} seconds.\n'.format(filename, round(timeit.default_timer()-export_start_time,2)))
@@ -27,7 +27,7 @@ def export_html(dataframe):
   html_data += dataframe.loc[:,'Long'].map(lambda x: '' if pd.isnull(x) else str(x)) + '</td><td>'
   html_data += dataframe.loc[:,'Elevation'].map(lambda x: '' if pd.isnull(x) else str(round(x))) + '</td></tr>'
 
-  filename = 'collection_' + datetime.datetime.now().strftime('%Y%m%d') + '.txt'
+  filename = 'collection_' + datetime.datetime.now().strftime('%Y%m%d') + '.txt' if args.d else 'collection.txt'
   with open(filename, 'w') as f:
     for r in html_data:
       f.write(r+'\n')
@@ -49,7 +49,7 @@ def export_kml(dataframe):
   for i, k in kml_data.iterrows():
     pnt = kml.newpoint(name=k[0], coords=[(k[1], k[2])], description=k[3])
     pnt.style = style
-  filename = 'collection_' + datetime.datetime.now().strftime('%Y%m%d') + '.kml'
+  filename = 'collection_' + datetime.datetime.now().strftime('%Y%m%d') + '.kml' if args.d else 'collection.kml'
 
   kml.save(path=filename)
 
@@ -76,6 +76,7 @@ def process_holes(filename):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Filter and convert the LacCore Holes Excel file into different formats needed for publishing.')
   parser.add_argument('holes_file', type=str, help='Name of LacCore Holes file.')
+  parser.add_argument('-d', action='store_true', help='Export files with the date in the filename (format: YYYYMMDD).')
 
   args = parser.parse_args()
 
