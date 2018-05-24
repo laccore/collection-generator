@@ -13,7 +13,7 @@ def export_csv(dataframe, export_filename):
   csv_data = dataframe.loc[:,['Location','Country','State_Province','Hole ID','Original ID','Date','Water Depth (m)','Lat','Long','Elevation','Position','Sample Type','mblf T','mblf B']]
   csv_data.Date = csv_data.Date.apply(lambda x: x.strftime('%Y%m%d') if isinstance(x, pd.datetime) and pd.notnull(x) else x)
 
-  csv_data.to_csv(export_filename, encoding='utf-8', index=False)
+  csv_data.to_csv(export_filename, encoding='utf-8-sig', index=False)
 
   print('Collection exported to {} in {} seconds.\n'.format(export_filename, round(timeit.default_timer()-export_start_time,2)))
 
@@ -45,8 +45,9 @@ def export_kml(dataframe, export_filename):
   style.iconstyle.color = 'ff0000cc'
 
   for i, k in kml_data.iterrows():
-    pnt = kml.newpoint(name=k[0], coords=[(k[1], k[2])], description=k[3])
-    pnt.style = style
+    if pd.notnull(k[1]) and pd.notnull(k[2]):
+      pnt = kml.newpoint(name=k[0], coords=[(k[1], k[2])], description=k[3])
+      pnt.style = style
 
   kml.save(path=export_filename)
 
