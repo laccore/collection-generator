@@ -22,9 +22,9 @@ def export_html(dataframe, export_filename):
   export_start_time = timeit.default_timer()
   print('Exporting collection to HTML...')
   html_data = '<tr><td>' + dataframe.loc[:,'Location'] + '</td><td>'
-  html_data += dataframe.loc[:,'Lat'].map(lambda x: '' if pd.isnull(x) else str(x)) + '</td><td>'
-  html_data += dataframe.loc[:,'Long'].map(lambda x: '' if pd.isnull(x) else str(x)) + '</td><td>'
-  html_data += dataframe.loc[:,'Elevation'].map(lambda x: '' if pd.isnull(x) else str(round(x))) + '</td></tr>'
+  html_data += dataframe.loc[:,'Lat'].apply(lambda x: '' if pd.isnull(x) else str(x)) + '</td><td>'
+  html_data += dataframe.loc[:,'Long'].apply(lambda x: '' if pd.isnull(x) else str(x)) + '</td><td>'
+  html_data += dataframe.loc[:,'Elevation'].apply(lambda x: '' if pd.isnull(x) else str(round(x))) + '</td></tr>'
 
   with open(export_filename, 'w') as f:
     for r in html_data:
