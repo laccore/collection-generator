@@ -10,10 +10,10 @@ pd.options.mode.chained_assignment = None
 def export_csv(dataframe, export_filename):
   export_start_time = timeit.default_timer()
   print('Exporting collection to CSV...')
-  csv_data = dataframe.loc[:,['Location','Country','State_Province','Hole ID','Original ID','Date','Water Depth (m)','Lat','Long','Elevation','Position','Sample Type','mblf T','mblf B']]
+  csv_data = dataframe.loc[:,['Location','Country','State_Province','Hole ID','Original ID','Date','Water Depth (m)','Lat','Long','Elevation','Position','Sample Type','mblf T','mblf B','IGSN']]
   csv_data.Date = csv_data.Date.apply(lambda x: x.strftime('%Y%m%d') if isinstance(x, pd.datetime) and pd.notnull(x) else x)
 
-  csv_data.to_csv(export_filename, encoding='utf-8-sig', index=False)
+  csv_data.to_csv(export_filename, encoding='utf-8-sig', index=False, float_format='%g')
 
   print('Collection exported to {} in {} seconds.\n'.format(export_filename, round(timeit.default_timer()-export_start_time,2)))
 
@@ -24,7 +24,8 @@ def export_html(dataframe, export_filename):
   html_data = '<tr><td>' + dataframe.loc[:,'Location'] + '</td><td>'
   html_data += dataframe.loc[:,'Lat'].apply(lambda x: '' if pd.isnull(x) else str(x)) + '</td><td>'
   html_data += dataframe.loc[:,'Long'].apply(lambda x: '' if pd.isnull(x) else str(x)) + '</td><td>'
-  html_data += dataframe.loc[:,'Elevation'].apply(lambda x: '' if pd.isnull(x) else str(round(x))) + '</td></tr>'
+  html_data += dataframe.loc[:,'Elevation'].apply(lambda x: '' if pd.isnull(x) else str(round(x))) + '</td><td>'
+  html_data += dataframe.loc[:,'IGSN'].apply(lambda x: '' if pd.isnull(x) else x) + '</td></tr>'
 
   with open(export_filename, 'w') as f:
     for r in html_data:
@@ -82,4 +83,4 @@ if __name__ == '__main__':
     filename = 'collection_' + datetime.datetime.now().strftime('%Y%m%d') if args.d else 'collection'
     process_holes(args.holes_file, filename)
   else:
-    print("ERROR: file '{}' does not exist or is not readable.\n".format(args.holes_file))
+    print('ERROR: file \'{}\' does not exist or is not readable.\n'.format(args.holes_file))
