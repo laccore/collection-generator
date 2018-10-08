@@ -11,7 +11,8 @@ def export_csv(dataframe, export_filename):
   export_start_time = timeit.default_timer()
   print('Exporting collection to CSV...')
   csv_data = dataframe.loc[:,['Location','Country','State_Province','Hole ID','Original ID','Date','Water Depth (m)','Lat','Long','Elevation','Position','Sample Type','mblf T','mblf B','IGSN']]
-  csv_data.Date = csv_data.Date.apply(lambda x: x.strftime('%Y%m%d') if isinstance(x, pd.datetime) and pd.notnull(x) else x)
+  csv_data.loc[:, 'Date'] = csv_data.loc[:, 'Date'].apply(lambda x: x.strftime('%Y%m%d') if isinstance(x, pd.datetime) and pd.notnull(x) else x)
+
 
   csv_data.to_csv(export_filename, encoding='utf-8-sig', index=False, float_format='%g')
 
@@ -38,7 +39,17 @@ def export_kml(dataframe, export_filename):
   export_start_time = timeit.default_timer()
   print('Exporting collection to KML...')
 
-  kml_data = dataframe.loc[:,['Location','Long','Lat','Google Earth Comment Field']]
+  kml_data = dataframe.loc[:,['Location','Long','Lat']]
+
+  kml_data['GECF']= (dataframe['Hole ID'].apply(lambda x: 'LacCoreID: ' + str(x) if pd.notnull(x) else '') + 
+                     dataframe['Original ID'].apply(lambda x: ' / FieldID: ' + str(x) if pd.notnull(x) else '') + 
+                     dataframe['Date'].apply(lambda x: ' / Date: ' + x.strftime('%Y-%m-%d') if pd.notnull(x) else '') + 
+                     dataframe['Water Depth (m)'].apply(lambda x: ' / Water Depth: ' + str(x) + 'm ' if pd.notnull(x) else '') +
+                     dataframe[['mblf T', 'mblf B']].apply(lambda x: (' / Sediment Depth: ' + (str(x[0]) if pd.notnull(x[0]) else '?') + '-' + (str(x[1]) if pd.notnull(x[1]) else '?') + 'm') if (pd.notnull(x[0]) or pd.notnull(x[1])) else '', axis=1) + 
+                     dataframe['Position'].apply(lambda x: ' / Position: ' + str(x) if pd.notnull(x) else '') + 
+                     dataframe['IGSN'].apply(lambda x: ' / IGSN: ' + str(x) if pd.notnull(x) else '') + 
+                     dataframe['Sample Type'].apply(lambda x: ' / Sample Type: ' + str(x) if pd.notnull(x) else ''))
+
   kml = simplekml.Kml(name='LacCore/CSDCO Core Collection')
   style = simplekml.Style()
   style.iconstyle.icon.href = 'http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png'
@@ -59,11 +70,10 @@ def process_holes(holes_filename, export_filename):
   print('Loading {}...'.format(holes_filename))
   load_start_time = timeit.default_timer()
   df = pd.read_excel(holes_filename, parse_dates=False)
+  print('Loaded {} in {} seconds.\n'.format(holes_filename, round(timeit.default_timer()-load_start_time,2)))
 
   df.loc[:, ['Lat', 'Long']] = df.loc[:,['Lat', 'Long']].apply(lambda x: round(x, 4))
   df.loc[:, 'Water Depth (m)'] = df.loc[:,'Water Depth (m)'].apply(lambda x: round(x, 2))
-
-  print('Loaded {} in {} seconds.\n'.format(holes_filename, round(timeit.default_timer()-load_start_time,2)))
 
   export_csv(df, export_filename + '.csv')
   export_html(df, export_filename + '.txt')
