@@ -85,7 +85,7 @@ def process_holes(holes_filename, export_filename):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Filter and convert the LacCore Holes Excel file into different formats needed for publishing.')
   parser.add_argument('holes_file', type=str, help='Name of LacCore Holes file.')
-  parser.add_argument('-d', action='store_true', help='Export files with the date in the filename (format: YYYYMMDD).')
+  parser.add_argument('-d', action='store_true', help='Export files with the date in the filename (e.g., collection_YYYYMMDD.csv).')
 
   args = parser.parse_args()
 
@@ -93,4 +93,4 @@ if __name__ == '__main__':
     filename = 'collection_' + datetime.datetime.now().strftime('%Y%m%d') if args.d else 'collection'
     process_holes(args.holes_file, filename)
   else:
-    print('ERROR: file \'{}\' does not exist or is not readable.\n'.format(args.holes_file))
+    print('ERROR: file \'{}\' does not exist.\n'.format(args.holes_file))
