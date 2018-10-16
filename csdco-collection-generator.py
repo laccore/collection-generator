@@ -71,7 +71,7 @@ def process_holes(holes_database, export_filename):
   load_start_time = timeit.default_timer()
 
   conn = sqlite3.connect(holes_database)
-  df = pd.read_sql_query("SELECT * FROM Holes", conn)
+  df = pd.read_sql_query("SELECT * FROM boreholes", conn)
 
   print('Loaded {} in {} seconds.\n'.format(holes_database, round(timeit.default_timer()-load_start_time,2)))
 
