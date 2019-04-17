@@ -70,7 +70,10 @@ def process_holes(holes_database, filename):
   print(f'Loading {holes_database}...', end='\r')
   load_start_time = timeit.default_timer()
 
-  conn = sqlite3.connect(holes_database)
+  # Set up database connection in uri mode so as to open as read-only
+  conn = sqlite3.connect('file:' + holes_database + '?mode=ro', uri=True)
+
+  # Get all data from boreholes table
   dataframe = pd.read_sql_query("SELECT * FROM boreholes", conn)
 
   print(f'Loaded {holes_database} in {round(timeit.default_timer()-load_start_time,2)} seconds.')
