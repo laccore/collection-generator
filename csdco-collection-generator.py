@@ -75,10 +75,6 @@ def process_holes(holes_database, filename):
 
   print('Loaded {} in {} seconds.\n'.format(holes_database, round(timeit.default_timer()-load_start_time,2)))
 
-  for x in dataframe['Long']:
-    if type(x) != float:
-      print(type(x), x)
-
   dataframe['Long'] = dataframe['Long'].apply(lambda x: None if pd.isnull(x) else round(x, 4))
   dataframe['Lat'] = dataframe['Lat'].apply(lambda x: None if pd.isnull(x) else round(x, 4))
   dataframe['Water_Depth'] = dataframe['Water_Depth'].apply(lambda x: None if pd.isnull(x) else round(x, 2))
