@@ -10,18 +10,18 @@ pd.options.mode.chained_assignment = None
 
 def export_csv(dataframe, filename):
   export_start_time = timeit.default_timer()
-  print('Exporting collection to CSV...')
+  print('Exporting collection to CSV...', end='\r')
   csv_data = dataframe[['Location','Country','State_Province','Hole_ID','Original_ID','Date','Water_Depth','Lat','Long','Elevation','Position','Sample_Type','mblf_T','mblf_B','IGSN']]
   csv_data['Date'] = csv_data['Date'].apply(lambda x: x.replace('-','') if pd.notnull(x) else x)
 
   csv_data.to_csv(filename, encoding='utf-8-sig', index=False, float_format='%g')
 
-  print('Collection exported to {} in {} seconds.\n'.format(filename, round(timeit.default_timer()-export_start_time,2)))
+  print(f'Collection exported to {filename} in {round(timeit.default_timer()-export_start_time,2)} seconds.')
 
 
 def export_html(dataframe, filename):
   export_start_time = timeit.default_timer()
-  print('Exporting collection to HTML...')
+  print('Exporting collection to HTML...', end='\r')
   html_data = '<tr><td>' + dataframe['Location'] + '</td><td>'
   html_data += dataframe['Lat'].apply(lambda x: '' if pd.isnull(x) else str(x)) + '</td><td>'
   html_data += dataframe['Long'].apply(lambda x: '' if pd.isnull(x) else str(x)) + '</td><td>'
@@ -32,12 +32,12 @@ def export_html(dataframe, filename):
     for r in html_data:
       f.write(r+'\n')
 
-  print('Collection exported to {} in {} seconds.\n'.format(filename, round(timeit.default_timer()-export_start_time,2)))
+  print(f'Collection exported to {filename} in {round(timeit.default_timer()-export_start_time,2)} seconds.')
 
 
 def export_kml(dataframe, filename):
   export_start_time = timeit.default_timer()
-  print('Exporting collection to KML...')
+  print('Exporting collection to KML...', end='\r')
 
   kml_data = dataframe[['Location','Long','Lat']]
 
@@ -63,29 +63,31 @@ def export_kml(dataframe, filename):
 
   kml.save(path=filename)
 
-  print('Collection exported to {} in {} seconds.\n'.format(filename, round(timeit.default_timer()-export_start_time,2)))
+  print(f'Collection exported to {filename} in {round(timeit.default_timer()-export_start_time,2)} seconds.')
 
 
 def process_holes(holes_database, filename):
-  print('Loading {}...'.format(holes_database))
+  print(f'Loading {holes_database}...', end='\r')
   load_start_time = timeit.default_timer()
 
   conn = sqlite3.connect(holes_database)
   dataframe = pd.read_sql_query("SELECT * FROM boreholes", conn)
 
-  print('Loaded {} in {} seconds.\n'.format(holes_database, round(timeit.default_timer()-load_start_time,2)))
+  print(f'Loaded {holes_database} in {round(timeit.default_timer()-load_start_time,2)} seconds.')
 
   dataframe['Long'] = dataframe['Long'].apply(lambda x: None if pd.isnull(x) else round(x, 4))
   dataframe['Lat'] = dataframe['Lat'].apply(lambda x: None if pd.isnull(x) else round(x, 4))
   dataframe['Water_Depth'] = dataframe['Water_Depth'].apply(lambda x: None if pd.isnull(x) else round(x, 2))
 
+  print()
   export_csv(dataframe=dataframe, filename=export_filename + '.csv')
   export_html(dataframe=dataframe, filename=export_filename + '.txt')
   export_kml(dataframe=dataframe, filename=export_filename + '.kml')
+  print()
 
   conn.close()
 
-  print('Finished processing {} in {} seconds.\n'.format(holes_database, round(timeit.default_timer()-load_start_time,2)))
+  print(f'Finished processing {holes_database} in {round(timeit.default_timer()-load_start_time,2)} seconds.')
 
 
 if __name__ == '__main__':
@@ -99,4 +101,4 @@ if __name__ == '__main__':
     export_filename = 'collection' if args.no_date else 'collection_' + datetime.datetime.now().strftime('%Y%m%d') 
     process_holes(args.db_file, export_filename)
   else:
-    print('ERROR: file \'{}\' does not exist.\n'.format(args.db_file))
+    print(f"ERROR: file '{args.db_file}' does not exist.")
