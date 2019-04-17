@@ -1,2 +1,2 @@
 # csdco-collection-generator
-A small script that takes the CSDCO metadata Excel file and converts that data into csv, HTML, and a KML
+Takes the CSDCO sqlite database and converts the Holes data into CSV, HTML, and KML for publishing in various locations.
