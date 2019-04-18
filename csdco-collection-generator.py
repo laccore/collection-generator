@@ -95,13 +95,13 @@ def process_holes(holes_database, filename):
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Filter and convert the LacCore Holes Excel file into different formats needed for publishing.')
-  parser.add_argument('db_file', type=str, help='Name of CSDCO database file.')
-  parser.add_argument('-d', '--no-date', action='store_true', help='Export files without the date in the filename (e.g., collection_YYYYMMDD.csv).')
+  parser.add_argument('db_file', type=str, help='Path to CSDCO database file.')
+  parser.add_argument('-d', '--date-stamp', action='store_true', help='Export files with the date in the filename (e.g., collection_YYYYMMDD.csv).')
 
   args = parser.parse_args()
 
   if os.path.isfile(args.db_file):
-    export_filename = 'collection' if args.no_date else 'collection_' + datetime.datetime.now().strftime('%Y%m%d') 
+    export_filename = 'collection' if not args.date_stamp else 'collection_' + datetime.datetime.now().strftime('%Y%m%d') 
     process_holes(args.db_file, export_filename)
   else:
     print(f"ERROR: file '{args.db_file}' does not exist.")
