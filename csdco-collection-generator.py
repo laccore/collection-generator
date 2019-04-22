@@ -10,18 +10,18 @@ pd.options.mode.chained_assignment = None
 
 def export_csv(dataframe, filename):
   export_start_time = timeit.default_timer()
-  print('Exporting collection to CSV...', end='\r')
+  print('Exporting collection to CSV...', end='\r', flush=True)
   csv_data = dataframe[['Location','Country','State_Province','Hole_ID','Original_ID','Date','Water_Depth','Lat','Long','Elevation','Position','Sample_Type','mblf_T','mblf_B','IGSN']]
   csv_data['Date'] = csv_data['Date'].apply(lambda x: x.replace('-','') if pd.notnull(x) else x)
 
   csv_data.to_csv(filename, encoding='utf-8-sig', index=False, float_format='%g')
 
-  print(f'Collection exported to {filename} in {round(timeit.default_timer()-export_start_time,2)} seconds.')
+  print(f'Collection exported to {filename} in {round(timeit.default_timer()-export_start_time,2)} seconds.', flush=True)
 
 
 def export_html(dataframe, filename):
   export_start_time = timeit.default_timer()
-  print('Exporting collection to HTML...', end='\r')
+  print('Exporting collection to HTML...', end='\r', flush=True)
   html_data = '<tr><td>' + dataframe['Location'] + '</td><td>'
   html_data += dataframe['Lat'].apply(lambda x: '' if pd.isnull(x) else str(x)) + '</td><td>'
   html_data += dataframe['Long'].apply(lambda x: '' if pd.isnull(x) else str(x)) + '</td><td>'
@@ -32,12 +32,12 @@ def export_html(dataframe, filename):
     for r in html_data:
       f.write(r+'\n')
 
-  print(f'Collection exported to {filename} in {round(timeit.default_timer()-export_start_time,2)} seconds.')
+  print(f'Collection exported to {filename} in {round(timeit.default_timer()-export_start_time,2)} seconds.', flush=True)
 
 
 def export_kml(dataframe, filename):
   export_start_time = timeit.default_timer()
-  print('Exporting collection to KML...', end='\r')
+  print('Exporting collection to KML...', end='\r', flush=True)
 
   kml_data = dataframe[['Location','Long','Lat']]
 
@@ -63,11 +63,11 @@ def export_kml(dataframe, filename):
 
   kml.save(path=filename)
 
-  print(f'Collection exported to {filename} in {round(timeit.default_timer()-export_start_time,2)} seconds.')
+  print(f'Collection exported to {filename} in {round(timeit.default_timer()-export_start_time,2)} seconds.', flush=True)
 
 
 def process_holes(holes_database, filename):
-  print(f'Loading {holes_database}...', end='\r')
+  print(f'Loading {holes_database}...', end='\r', flush=True)
   load_start_time = timeit.default_timer()
 
   # Set up database connection in uri mode so as to open as read-only
@@ -76,21 +76,21 @@ def process_holes(holes_database, filename):
   # Get all data from boreholes table
   dataframe = pd.read_sql_query("SELECT * FROM boreholes", conn)
 
-  print(f'Loaded {holes_database} in {round(timeit.default_timer()-load_start_time,2)} seconds.')
+  print(f'Loaded {holes_database} in {round(timeit.default_timer()-load_start_time,2)} seconds.', flush=True)
 
   dataframe['Long'] = dataframe['Long'].apply(lambda x: None if pd.isnull(x) else round(x, 4))
   dataframe['Lat'] = dataframe['Lat'].apply(lambda x: None if pd.isnull(x) else round(x, 4))
   dataframe['Water_Depth'] = dataframe['Water_Depth'].apply(lambda x: None if pd.isnull(x) else round(x, 2))
 
-  print()
+  print(flush=True)
   export_csv(dataframe=dataframe, filename=filename + '.csv')
   export_html(dataframe=dataframe, filename=filename + '.txt')
   export_kml(dataframe=dataframe, filename=filename + '.kml')
-  print()
+  print(flush=True)
 
   conn.close()
 
-  print(f'Finished processing {holes_database} in {round(timeit.default_timer()-load_start_time,2)} seconds.')
+  print(f'Finished processing {holes_database} in {round(timeit.default_timer()-load_start_time,2)} seconds.', flush=True)
 
 
 @Gooey(program_name='CSDCO Collection Generator')
@@ -105,11 +105,11 @@ def main():
   args = parser.parse_args()
 
   if not os.path.isfile(args.database_file):
-    print(f"ERROR: database file '{args.database_file}' does not exist. Exiting.")
+    print(f"ERROR: database file '{args.database_file}' does not exist. Exiting.", flush=True)
     exit(1)
   
   if not os.path.isdir(args.output_directory):
-    print(f"ERROR: output folder '{args.output_directory}' does not exist. Exiting.")
+    print(f"ERROR: output folder '{args.output_directory}' does not exist. Exiting.", flush=True)
     exit(1)
 
   export_filename = 'collection' if not args.date_stamp else 'collection_' + datetime.datetime.now().strftime('%Y%m%d')
