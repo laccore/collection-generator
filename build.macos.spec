@@ -29,6 +29,10 @@ exe = EXE(pyz,
           icon=os.path.join(gooey_root, 'images', 'program_icon.ico'))
 
 app = BUNDLE(exe,
-         name='CSDCO Collection Generator.app',
-         icon=None,
-         bundle_identifier=None)
+             name='CSDCO Collection Generator.app',
+             icon=None,
+             bundle_identifier=None,
+             info_plist={
+               'NSHighResolutionCapable': 'True'
+               }
+             )
