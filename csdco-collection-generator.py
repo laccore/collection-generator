@@ -93,13 +93,14 @@ def process_holes(holes_database, filename):
   print(f'Finished processing {holes_database} in {round(timeit.default_timer()-load_start_time,2)} seconds.')
 
 
-@Gooey(program_name='CSDCO Collection File Generator')
+@Gooey(program_name='CSDCO Collection Generator')
 def main():
   parser = GooeyParser(description='Export borehole data from the CSDCO datbase for publishing.')
-  input_output = parser.add_argument_group(gooey_options={'columns': 1})
+  input_output = parser.add_argument_group('Input and Output', gooey_options={'columns': 1})
   input_output.add_argument('database_file', widget='FileChooser', metavar='CSDCO Database File', help='Path of the CSDCO database file.')
   input_output.add_argument('output_directory', widget='DirChooser', metavar='Save Path', help='Where to save output files.')
-  parser.add_argument('-d', '--date-stamp', action='store_true', help='Export files with the date in the filename (e.g., collection_YYYYMMDD.csv).')
+  options = parser.add_argument_group('Export Options')
+  options.add_argument('-d', '--date-stamp', metavar='Append datestamp to file names', action='store_true', help='Export files with the date in the filename (e.g., collection_YYYYMMDD.csv).')
 
   args = parser.parse_args()
 
