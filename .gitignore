@@ -1,2 +1,5 @@
 collection*
 LacCore_Holes_*
+build/*
+dist/*
+__pycache__/*

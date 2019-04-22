@@ -2,9 +2,9 @@ import pandas as pd
 import datetime
 import simplekml
 import timeit
-import argparse
 import os.path
 import sqlite3
+from gooey import Gooey, GooeyParser
 
 pd.options.mode.chained_assignment = None
 
@@ -83,9 +83,9 @@ def process_holes(holes_database, filename):
   dataframe['Water_Depth'] = dataframe['Water_Depth'].apply(lambda x: None if pd.isnull(x) else round(x, 2))
 
   print()
-  export_csv(dataframe=dataframe, filename=export_filename + '.csv')
-  export_html(dataframe=dataframe, filename=export_filename + '.txt')
-  export_kml(dataframe=dataframe, filename=export_filename + '.kml')
+  export_csv(dataframe=dataframe, filename=filename + '.csv')
+  export_html(dataframe=dataframe, filename=filename + '.txt')
+  export_kml(dataframe=dataframe, filename=filename + '.kml')
   print()
 
   conn.close()
@@ -93,15 +93,29 @@ def process_holes(holes_database, filename):
   print(f'Finished processing {holes_database} in {round(timeit.default_timer()-load_start_time,2)} seconds.')
 
 
-if __name__ == '__main__':
-  parser = argparse.ArgumentParser(description='Filter and convert the LacCore Holes Excel file into different formats needed for publishing.')
-  parser.add_argument('db_file', type=str, help='Path to CSDCO database file.')
-  parser.add_argument('-d', '--date-stamp', action='store_true', help='Export files with the date in the filename (e.g., collection_YYYYMMDD.csv).')
+@Gooey(program_name='CSDCO Collection Generator')
+def main():
+  parser = GooeyParser(description='Export borehole data from the CSDCO datbase for publishing.')
+  input_output = parser.add_argument_group('Input and Output', gooey_options={'columns': 1})
+  input_output.add_argument('database_file', widget='FileChooser', metavar='CSDCO Database File', help='Path of the CSDCO database file.')
+  input_output.add_argument('output_directory', widget='DirChooser', metavar='Save Path', help='Where to save output files.')
+  options = parser.add_argument_group('Export Options')
+  options.add_argument('-d', '--date-stamp', metavar='Append datestamp to file names', action='store_true', help='Export files with the date in the filename (e.g., collection_YYYYMMDD.csv).')
 
   args = parser.parse_args()
 
-  if os.path.isfile(args.db_file):
-    export_filename = 'collection' if not args.date_stamp else 'collection_' + datetime.datetime.now().strftime('%Y%m%d') 
-    process_holes(args.db_file, export_filename)
-  else:
-    print(f"ERROR: file '{args.db_file}' does not exist.")
+  if not os.path.isfile(args.database_file):
+    print(f"ERROR: database file '{args.database_file}' does not exist. Exiting.")
+    exit(1)
+  
+  if not os.path.isdir(args.output_directory):
+    print(f"ERROR: output folder '{args.output_directory}' does not exist. Exiting.")
+    exit(1)
+
+  export_filename = 'collection' if not args.date_stamp else 'collection_' + datetime.datetime.now().strftime('%Y%m%d')
+  export_filename = os.path.join(args.output_directory, export_filename)
+  process_holes(args.database_file, export_filename)
+
+
+if __name__ == '__main__':
+  main()
