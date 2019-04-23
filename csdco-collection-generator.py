@@ -95,12 +95,39 @@ def process_holes(holes_database, filename):
 
 @Gooey(program_name='CSDCO Collection Generator')
 def main():
+  default_path = ''
+  potential_paths = [
+    '/Volumes/CSDCO/Vault/projects/!inventory/CSDCO.sqlite3',
+    'Z:/projects/!inventory/CSDCO.sqlite3',
+    'Y:/projects/!inventory/CSDCO.sqlite3',
+    'Z:/Vault/projects/!inventory/CSDCO.sqlite3',
+    'Y:/Vault/projects/!inventory/CSDCO.sqlite3'
+  ]
+
+  for path in potential_paths:
+    if os.path.isfile(path):
+      default_path = path
+      print(f"Found CSDCO database at '{path}'.")
+      break
+
   parser = GooeyParser(description='Export borehole data from the CSDCO datbase for publishing.')
+
   input_output = parser.add_argument_group('Input and Output', gooey_options={'columns': 1})
-  input_output.add_argument('database_file', widget='FileChooser', metavar='CSDCO Database File', help='Path of the CSDCO database file.')
-  input_output.add_argument('output_directory', widget='DirChooser', metavar='Save Path', help='Where to save output files.')
+  input_output.add_argument('database_file',
+                            widget='FileChooser',
+                            metavar='CSDCO Database File',
+                            default=default_path,
+                            help='Path of the CSDCO database file.')
+  input_output.add_argument('output_directory',
+                            widget='DirChooser',
+                            metavar='Save Path',
+                            help='Where to save output files.')
+
   options = parser.add_argument_group('Export Options')
-  options.add_argument('-d', '--date-stamp', metavar='Append datestamp to file names', action='store_true', help='Export files with the date in the filename (e.g., collection_YYYYMMDD.csv).')
+  options.add_argument('-d', '--date-stamp',
+                       metavar='Append datestamp to file names',
+                       action='store_true',
+                       help='Export files with the date in the filename (e.g., collection_YYYYMMDD.csv).')
 
   args = parser.parse_args()
 
