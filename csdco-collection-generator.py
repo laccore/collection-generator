@@ -110,7 +110,7 @@ def main():
       print(f"Found CSDCO database at '{path}'.")
       break
 
-  parser = GooeyParser(description='Export borehole data from the CSDCO datbase for publishing.')
+  parser = GooeyParser(description='Export borehole data from the CSDCO database for publishing.')
 
   input_output = parser.add_argument_group('Input and Output', gooey_options={'columns': 1})
   input_output.add_argument('database_file',
