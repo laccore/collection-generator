@@ -2,7 +2,7 @@ import gooey
 gooey_root = os.path.dirname(gooey.__file__)
 gooey_languages = Tree(os.path.join(gooey_root, 'languages'), prefix = 'gooey/languages')
 gooey_images = Tree(os.path.join(gooey_root, 'images'), prefix = 'gooey/images')
-a = Analysis(['csdco-collection-generator.py'],
+a = Analysis(['collection-generator.py'],
              pathex=[r'C:\Users\xander\AppData\Local\Programs\Python\Python37-32\python.exe'],
              hiddenimports=[],
              hookspath=None,
@@ -20,7 +20,7 @@ exe = EXE(pyz,
           options,
           gooey_languages, # Add them in to collected files
           gooey_images, # Same here.
-          name='CSDCO Collection Generator.exe',
+          name='CSD Collection Generator.exe',
           debug=False,
           strip=None,
           upx=True,
