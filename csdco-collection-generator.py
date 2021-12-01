@@ -46,7 +46,11 @@ def export_csv(dataframe, filename):
 def export_html(dataframe, filename):
     export_start_time = timeit.default_timer()
     print("Exporting collection to HTML...", end="\r", flush=True)
-    html_data = "<tr><td>" + dataframe["Location"] + "</td><td>"
+    html_data = (
+        "<tr><td>"
+        + dataframe["Location"].apply(lambda x: "" if pd.isnull(x) else str(x))
+        + "</td><td>"
+    )
     html_data += (
         dataframe["Lat"].apply(lambda x: "" if pd.isnull(x) else str(x)) + "</td><td>"
     )
