@@ -65,7 +65,7 @@ def export_html(dataframe, filename):
         dataframe["IGSN"].apply(lambda x: "" if pd.isnull(x) else x) + "</td></tr>"
     )
 
-    with open(filename, "w") as f:
+    with open(filename, "w", encoding="utf8") as f:
         for r in html_data:
             f.write(r + "\n")
 
@@ -117,7 +117,7 @@ def export_kml(dataframe, filename):
         )
     )
 
-    kml = simplekml.Kml(name="LacCore/CSDCO Core Collection")
+    kml = simplekml.Kml(name="CSD Core Collection")
     style = simplekml.Style()
     style.iconstyle.icon.href = (
         "http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png"
@@ -177,7 +177,7 @@ def process_holes(holes_database, filename):
     )
 
 
-@Gooey(program_name="CSDCO Collection Generator")
+@Gooey(program_name="CSD Collection Generator")
 def main():
     default_path = ""
     potential_paths = [
@@ -191,7 +191,7 @@ def main():
     for path in potential_paths:
         if os.path.isfile(path):
             default_path = path
-            print(f"Found CSDCO database at '{path}'.")
+            print(f"Found CSDCO.sqlite3 database at '{path}'.")
             break
 
     parser = GooeyParser(
