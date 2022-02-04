@@ -83,7 +83,7 @@ def export_kml(dataframe, filename):
 
     kml_data["GECF"] = (
         dataframe["Hole_ID"].apply(
-            lambda x: "LacCoreID: " + str(x) if pd.notnull(x) else ""
+            lambda x: "CSD Facility ID: " + str(x) if pd.notnull(x) else ""
         )
         + dataframe["Original_ID"].apply(
             lambda x: " / FieldID: " + str(x) if pd.notnull(x) else ""
