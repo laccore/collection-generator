@@ -138,7 +138,7 @@ def export_kml(dataframe, filename):
     )
 
 
-def process_holes(holes_database, filename):
+def process_holes(holes_database, filename, export_legacy_files=False):
     print(f"Loading {holes_database}...", end="\r", flush=True)
     load_start_time = timeit.default_timer()
 
@@ -164,8 +164,9 @@ def process_holes(holes_database, filename):
     )
 
     print(flush=True)
-    export_csv(dataframe=dataframe, filename=filename + ".csv")
-    export_html(dataframe=dataframe, filename=filename + ".txt")
+    if export_legacy_files:
+        export_csv(dataframe=dataframe, filename=filename + ".csv")
+        export_html(dataframe=dataframe, filename=filename + ".txt")
     export_kml(dataframe=dataframe, filename=filename + ".kml")
     print(flush=True)
 
@@ -223,6 +224,13 @@ def main():
         action="store_true",
         help="Export files with the date in the filename (e.g., collection_YYYYMMDD.csv).",
     )
+    options.add_argument(
+        "-l",
+        "--legacy-files",
+        metavar="Generate legacy files",
+        action="store_true",
+        help="Generate and export legacy files (csv, txt).",
+    )
 
     args = parser.parse_args()
 
@@ -246,7 +254,7 @@ def main():
         else "collection_" + datetime.datetime.now().strftime("%Y%m%d")
     )
     export_filename = os.path.join(args.output_directory, export_filename)
-    process_holes(args.database_file, export_filename)
+    process_holes(args.database_file, export_filename, args.legacy_files)
 
 
 if __name__ == "__main__":
